@@ -1,0 +1,78 @@
+# ===============================
+# UPDATE
+# ===============================
+apt update -y && apt upgrade -y
+
+# ===============================
+# XFCE (DESKTOP LEVE)
+# ===============================
+apt install -y xfce4 xfce4-goodies xorg dbus-x11 x11-xserver-utils
+
+# ===============================
+# GPU / VULKAN
+# ===============================
+apt install -y mesa-utils vulkan-tools \
+libgl1-mesa-dri libgl1-mesa-glx \
+mesa-vulkan-drivers libvulkan1
+
+# ===============================
+# USUÁRIO GAMER
+# ===============================
+useradd -m gamer
+echo "gamer:gamer123" | chpasswd
+usermod -aG sudo gamer
+
+# ===============================
+# ANYDESK (ACESSO INICIAL)
+# ===============================
+wget -qO - https://keys.anydesk.com/repos/DEB-GPG-KEY | apt-key add -
+echo "deb http://deb.anydesk.com/ all main" > /etc/apt/sources.list.d/anydesk.list
+apt update -y
+apt install -y anydesk
+
+mkdir -p /etc/anydesk
+echo "ad.security.interactive_access=1" >> /etc/anydesk/system.conf
+echo "ad.features.unattended_access=true" >> /etc/anydesk/system.conf
+echo -e "gamer123\ngamer123" | anydesk --set-password
+
+# ===============================
+# STEAM
+# ===============================
+dpkg --add-architecture i386
+apt update -y
+apt install -y steam
+
+# ===============================
+# WINE + LUTRIS
+# ===============================
+apt install -y wine64 wine32 winetricks
+add-apt-repository ppa:lutris-team/lutris -y
+apt update -y
+apt install -y lutris
+
+# ===============================
+# SUNSHINE
+# ===============================
+apt install -y wget unzip
+wget https://github.com/LizardByte/Sunshine/releases/latest/download/sunshine-linux.zip
+unzip sunshine-linux.zip -d /opt/sunshine
+chmod +x /opt/sunshine/sunshine
+
+# ===============================
+# DISPLAY VIRTUAL
+# ===============================
+export DISPLAY=:0
+Xvfb :0 -screen 0 1280x720x24 &
+sleep 2
+startxfce4 &
+
+# ===============================
+# INICIAR ANYDESK
+# ===============================
+anydesk --service
+anydesk &
+
+# ===============================
+# INICIAR SUNSHINE
+# ===============================
+/opt/sunshine/sunshine --config /opt/sunshine/sunshine.conf
